@@ -1,4 +1,4 @@
-import { translateText } from '../lib/ai-provider.js';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { query } from '../lib/db.js';
 
 export default async function handler(req, res) {
@@ -16,32 +16,61 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text, sourceLang, targetLang, tone, sessionId } = req.body;
+    const { text, sourceLang, targetLang, tone, sessionId } = req.body || {};
 
     if (!text || !text.trim()) {
       return res.status(400).json({ error: 'Text is required for translation.' });
     }
 
+    const apiKey = process.env.AI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'AI_API_KEY is not configured in Vercel environment variables.' });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const modelName = process.env.AI_MODEL || 'gemini-1.5-flash';
+    const model = genAI.getGenerativeModel({ model: modelName });
+
     const src = sourceLang || 'auto';
-    const tgt = targetLang || 'pt-BR';
+    const tgt = targetLang || 'Brazilian Portuguese';
     const currentTone = tone || 'natural';
 
-    const translatedText = await translateText({
-      text,
-      sourceLang: src,
-      targetLang: tgt,
-      tone: currentTone
-    });
+    const prompt = `You are a professional native-level Brazilian Portuguese and Indonesian conversational translator.
 
+Translate the user's message from "${src}" to "${tgt}" using the tone/style: "${currentTone}".
+Preserve exact meaning, intent, tone, emotional nuance, slang, abbreviations, technical terminology (such as offsets, APK, DEX, SO, Game Guardian, C++, Lua, scripts, coordinates), and conversational context.
+
+For Brazilian Portuguese, use natural contemporary Brazilian Portuguese (PT-BR), including colloquial forms when appropriate. Never default to European Portuguese.
+For Indonesian, use natural Indonesian that sounds like a real person chatting (using casual words like aku, kamu, gue, lu, bro, bang, banget sesuai gaya teks sumber).
+
+Understand context rather than translating word by word. Correct obvious typos only when the intended meaning is clear. Never invent facts, omit important details, or add explanations.
+Keep names, code, identifiers, game terminology, offsets, APK, DEX, SO, and other technical tokens unchanged when appropriate.
+
+Return ONLY the translated text without any conversational filler, quotation marks, or extra explanations.
+
+Text to translate:
+${text}`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const translatedText = response.text().trim();
+
+    // Simpan ke Neon DB secara aman (tidak bikin error jika DB belum di-setup)
     if (sessionId && process.env.DATABASE_URL) {
-      try {
-        await query(
-          `INSERT INTO translation_history (session_id, source_text, translated_text, source_lang, target_lang, tone) VALUES ($1, $2, $3, $4, $5, $6)`,
-          [sessionId, text, translatedText, src, tgt, currentTone]
+      await query(
+        `CREATE TABLE IF NOT EXISTS translation_history (
+          id SERIAL PRIMARY KEY,
+          session_id VARCHAR(255),
+          source_text TEXT,
+          translated_text TEXT,
+          source_lang VARCHAR(50),
+          target_lang VARCHAR(50),
+          tone VARCHAR(50),
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
-      } catch (dbErr) {
-        console.error('DB History save failed:', dbErr.message);
-      }
+        INSERT INTO translation_history (session_id, source_text, translated_text, source_lang, target_lang, tone) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [sessionId, text, translatedText, src, tgt, currentTone]
+      ).catch(e => console.log('DB log skipped:', e.message));
     }
 
     return res.status(200).json({
