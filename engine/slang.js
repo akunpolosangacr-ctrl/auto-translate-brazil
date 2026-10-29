@@ -5,7 +5,9 @@ const ptBrSlang = {
   "kkk": "wkwk",
   "ae": "hei",
   "trampo": "kerjaan",
-  "parça": "sohib"
+  "parça": "sohib",
+  "fita": "masalah",
+  "treta": "ribut"
 };
 
 const idSlang = {
@@ -14,7 +16,8 @@ const idSlang = {
   "mahal banget": "tá caro demais",
   "wkwk": "kkk",
   "banget": "demais",
-  "keren": "da hora"
+  "keren": "da hora",
+  "nge-crack": "crackear"
 };
 
 export function translateSlang(text, direction) {

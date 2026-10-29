@@ -7,11 +7,10 @@ export function applyNaturalTone(text, targetLang, style) {
       output = output + ', mano';
     }
   } else {
-    if (style === 'chat' && !output.includes('sih')) {
+    if (style === 'chat' && !output.includes('ya')) {
       output = output + ' ya';
     }
   }
   
-  // Kapitalisasi huruf pertama
   return output.charAt(0).toUpperCase() + output.slice(1);
 }

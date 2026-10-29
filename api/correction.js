@@ -18,11 +18,17 @@ export default async function handler(req, res) {
       `CREATE TABLE IF NOT EXISTS translation_corrections (
         id SERIAL PRIMARY KEY, source_text TEXT, corrected_text TEXT, source_lang VARCHAR(10), target_lang VARCHAR(10), status VARCHAR(20) DEFAULT 'pending', created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
-      INSERT INTO translation_corrections (source_text, corrected_text, source_lang, target_lang, status) VALUES ($1, $2, $3, $4, 'pending')`,
+      INSERT INTO translation_corrections (source_text, corrected_text, source_lang, target_lang, status) VALUES ($1, $2, $3, $4, 'approved')`,
       [sourceText, correctedText, sourceLang || 'id', targetLang || 'pt-BR']
     );
 
-    return res.status(200).json({ success: true, message: 'Correction submitted successfully for validation.' });
+    // Otomatis masukkan ke kamus aktif agar langsung bisa digunakan
+    await query(
+      `INSERT INTO translation_dictionary (source_lang, target_lang, source_phrase, target_phrase, category) VALUES ($1, $2, $3, $4, 'user_correction') ON CONFLICT DO NOTHING`,
+      [sourceLang || 'id', targetLang || 'pt-BR', sourceText.toLowerCase().trim(), correctedText.trim()]
+    );
+
+    return res.status(200).json({ success: true, message: 'Koreksi berhasil disimpan dan dipelajari oleh engine!' });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }

@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const dbCheck = await query('SELECT NOW()');
     return res.status(200).json({
       status: 'healthy',
-      engine: 'native-natural-engine',
+      engine: 'native-natural-engine-fixed',
       database: dbCheck ? 'connected' : 'disconnected',
       timestamp: new Date().toISOString()
     });
