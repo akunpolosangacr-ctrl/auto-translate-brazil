@@ -55,7 +55,6 @@ ${text}`;
     const response = await result.response;
     const translatedText = response.text().trim();
 
-    // Simpan ke Neon DB secara aman (tidak bikin error jika DB belum di-setup)
     if (sessionId && process.env.DATABASE_URL) {
       await query(
         `CREATE TABLE IF NOT EXISTS translation_history (
