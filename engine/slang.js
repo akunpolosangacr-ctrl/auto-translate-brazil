@@ -3,21 +3,14 @@ const ptBrSlang = {
   "caramba": "gila",
   "tá caro demais": "mahal banget",
   "kkk": "wkwk",
-  "ae": "hei",
-  "trampo": "kerjaan",
-  "parça": "sohib",
-  "fita": "masalah",
-  "treta": "ribut"
+  "trampo": "kerjaan"
 };
 
 const idSlang = {
   "bro": "mano",
   "gila": "caramba",
   "mahal banget": "tá caro demais",
-  "wkwk": "kkk",
-  "banget": "demais",
-  "keren": "da hora",
-  "nge-crack": "crackear"
+  "wkwk": "kkk"
 };
 
 export function translateSlang(text, direction) {

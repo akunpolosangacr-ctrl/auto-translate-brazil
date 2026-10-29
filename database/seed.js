@@ -12,46 +12,38 @@ export async function seedDatabase() {
           target_lang VARCHAR(10) NOT NULL,
           source_phrase TEXT NOT NULL,
           target_phrase TEXT NOT NULL,
-          category VARCHAR(50) DEFAULT 'general'
+          category VARCHAR(50) DEFAULT 'general',
+          CONSTRAINT unique_translation_pair UNIQUE (source_lang, target_lang, source_phrase)
       );
     `);
 
-    // Cek apakah data sudah ada
-    const check = await query('SELECT COUNT(*) FROM translation_dictionary');
-    if (check && parseInt(check.rows[0].count) > 0) {
-      console.log('Database already seeded.');
-      return;
-    }
-
     const initialPairs = [
-      // ID -> PT-BR
-      ('id', 'pt-BR', 'aku nggak tahu bro', 'não sei, mano', 'chat'),
-      ('id', 'pt-BR', 'gila mahal banget', 'caramba, tá caro demais', 'slang'),
-      ('id', 'pt-BR', 'aku akan mencobanya nanti', 'vou tentar mais tarde', 'general'),
-      ('id', 'pt-BR', 'kamu sedang apa?', 'o que você tá fazendo?', 'chat'),
-      ('id', 'pt-BR', 'bagaimana cara menemukan offset ini?', 'como faço para encontrar esse offset?', 'technical'),
-      ('id', 'pt-BR', 'aku cuma ingin tahu', 'só quero saber', 'general'),
-      ('id', 'pt-BR', 'apalah', 'seja o que for / o que quer que seja (ekspresi tidak pasti)', 'ambiguous'),
-      ('id', 'pt-BR', 'aku coba dulu nanti aku kasih tahu', 'vou tentar aqui e depois te aviso', 'natural'),
-      ('id', 'pt-BR', 'kamu tahu cara menemukan offset itu', 'tu sabe como encontrar esse offset?', 'technical'),
-      ('id', 'pt-BR', 'tidak tahu apa-apa', 'não faço ideia de nada', 'general'),
-      ('id', 'pt-BR', 'bagaimana kabarmu', 'tudo bem com você?', 'general'),
-      ('id', 'pt-BR', 'terima kasih banyak', 'muito obrigado', 'general'),
-
-      // PT-BR -> ID
-      ('pt-BR', 'id', 'tá muito caro, mano', 'mahal banget, bro', 'chat'),
-      ('pt-BR', 'id', 'vou tentar aqui', 'aku coba dulu di sini', 'natural'),
-      ('pt-BR', 'id', 'não faço ideia', 'aku sama sekali nggak tahu', 'general'),
-      ('pt-BR', 'id', 'os caras conseguiram crackear', 'orang-orang itu berhasil nge-crack', 'technical'),
-      ('pt-BR', 'id', 'tudo bem com você?', 'bagaimana kabarmu?', 'general'),
-      ('pt-BR', 'id', 'muito obrigado', 'terima kasih banyak', 'general'),
-      ('pt-BR', 'id', 'caramba, tá caro demais, mano', 'gila, mahal banget bro', 'slang'),
-      ('pt-BR', 'id', 'tu sabe como encontrar esse offset?', 'kamu tahu cara menemukan offset itu?', 'technical')
+      ['id', 'pt-BR', 'aku nggak tahu bro', 'não sei, mano', 'chat'],
+      ['id', 'pt-BR', 'gila mahal banget', 'caramba, tá caro demais', 'slang'],
+      ['id', 'pt-BR', 'aku akan mencobanya nanti', 'vou tentar mais tarde', 'general'],
+      ['id', 'pt-BR', 'kamu sedang apa?', 'o que você tá fazendo?', 'chat'],
+      ['id', 'pt-BR', 'bagaimana cara menemukan offset ini?', 'como faço para encontrar esse offset?', 'technical'],
+      ['id', 'pt-BR', 'aku cuma ingin tahu', 'só quero saber', 'general'],
+      ['id', 'pt-BR', 'aku coba dulu nanti aku kasih tahu', 'vou tentar aqui e depois te aviso', 'natural'],
+      ['id', 'pt-BR', 'kamu tahu cara menemukan offset itu', 'tu sabe como encontrar esse offset?', 'technical'],
+      ['id', 'pt-BR', 'tidak tahu apa-apa', 'não faço ideia de nada', 'general'],
+      ['id', 'pt-BR', 'bagaimana kabarmu', 'tudo bem com você?', 'general'],
+      ['id', 'pt-BR', 'terima kasih banyak', 'muito obrigado', 'general'],
+      ['pt-BR', 'id', 'tá muito caro, mano', 'mahal banget, bro', 'chat'],
+      ['pt-BR', 'id', 'vou tentar aqui', 'aku coba dulu di sini', 'natural'],
+      ['pt-BR', 'id', 'não faço ideia', 'aku sama sekali nggak tahu', 'general'],
+      ['pt-BR', 'id', 'os caras conseguiram crackear', 'orang-orang itu berhasil nge-crack', 'technical'],
+      ['pt-BR', 'id', 'tudo bem com você?', 'bagaimana kabarmu?', 'general'],
+      ['pt-BR', 'id', 'muito obrigado', 'terima kasih banyak', 'general'],
+      ['pt-BR', 'id', 'caramba, tá caro demais, mano', 'gila, mahal banget bro', 'slang'],
+      ['pt-BR', 'id', 'tu sabe como encontrar esse offset?', 'kamu tahu cara menemukan offset itu?', 'technical']
     ];
 
     for (const p of initialPairs) {
       await query(
-        `INSERT INTO translation_dictionary (source_lang, target_lang, source_phrase, target_phrase, category) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`,
+        `INSERT INTO translation_dictionary (source_lang, target_lang, source_phrase, target_phrase, category) 
+         VALUES ($1, $2, $3, $4, $5) 
+         ON CONFLICT (source_lang, target_lang, source_phrase) DO NOTHING`,
         [p[0], p[1], p[2], p[3], p[4]]
       );
     }

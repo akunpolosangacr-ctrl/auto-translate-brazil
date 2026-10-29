@@ -5,7 +5,9 @@ let pool;
 export function getPool() {
   if (!pool) {
     const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) return null;
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is missing.');
+    }
     pool = new Pool({
       connectionString,
       ssl: { rejectUnauthorized: false },
@@ -17,11 +19,11 @@ export function getPool() {
 
 export async function query(text, params) {
   const poolInstance = getPool();
-  if (!poolInstance) return null;
   try {
-    return await poolInstance.query(text, params);
+    const res = await poolInstance.query(text, params);
+    return res;
   } catch (error) {
-    console.error('Database query error:', error.message);
-    return null;
+    console.error('Database query execution error:', error.message);
+    throw error;
   }
 }

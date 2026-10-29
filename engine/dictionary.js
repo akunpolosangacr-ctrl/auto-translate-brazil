@@ -5,7 +5,6 @@ const idToPtBase = {
   "kamu sedang apa?": "o que você tá fazendo?",
   "bagaimana cara menemukan offset ini?": "como faço para encontrar esse offset?",
   "aku cuma ingin tahu": "só quero saber",
-  "apalah": "[Kata Ambigu / Informal]: Seja o que for / O que quer que seja (tergantung konteks kalimat di depannya)",
   "aku coba dulu nanti aku kasih tahu": "vou tentar aqui e depois te aviso",
   "kamu tahu cara menemukan offset itu": "tu sabe como encontrar esse offset?",
   "tidak tahu apa-apa": "não faço ideia de nada",
@@ -25,15 +24,11 @@ const ptToIdBase = {
 };
 
 export function lookupDictionary(text, direction) {
-  const clean = text.toLowerCase().trim().replace(/[?!.,]/g, '');
+  const cleanKey = text.trim().toLowerCase();
   const base = direction === 'id-to-pt' ? idToPtBase : ptToIdBase;
   
-  // Exact match
-  if (base[clean]) return base[clean];
-
-  // Partial match search
   for (const [k, v] of Object.entries(base)) {
-    if (clean.includes(k) || k.includes(clean)) {
+    if (k.toLowerCase() === cleanKey) {
       return v;
     }
   }
