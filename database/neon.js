@@ -19,10 +19,9 @@ export async function query(text, params) {
   const poolInstance = getPool();
   if (!poolInstance) return null;
   try {
-    const res = await poolInstance.query(text, params);
-    return res;
+    return await poolInstance.query(text, params);
   } catch (error) {
-    console.error('Database query error (non-fatal):', error.message);
+    console.error('Database query error:', error.message);
     return null;
   }
 }

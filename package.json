@@ -1,7 +1,7 @@
 {
   "name": "auto-translate-brazil",
-  "version": "1.0.0",
-  "description": "Natural Conversational Indonesian (ID) <-> Brazilian Portuguese (PT-BR) Translator",
+  "version": "2.0.0",
+  "description": "Native Natural Indonesian <-> Brazilian Portuguese Translation Engine",
   "main": "api/translate.js",
   "type": "module",
   "scripts": {
@@ -9,8 +9,6 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.14.0",
-    "@neondatabase/serverless": "^0.9.0",
     "pg": "^8.11.5"
   },
   "devDependencies": {
