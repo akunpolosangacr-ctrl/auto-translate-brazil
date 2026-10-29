@@ -2,7 +2,6 @@
   "name": "auto-translate-brazil",
   "version": "2.0.0",
   "description": "Native Natural Indonesian <-> Brazilian Portuguese Translation Engine",
-  "main": "api/translate.js",
   "type": "module",
   "scripts": {
     "start": "vercel dev",
