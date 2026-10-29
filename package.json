@@ -1,18 +1,18 @@
 {
-  "name": "my-neon-project",
+  "name": "auto-translate-brazil",
   "version": "1.0.0",
-  "description": "Backend API ready for Neon DB",
-  "main": "index.js",
+  "description": "Natural Conversational Indonesian (ID) <-> Brazilian Portuguese (PT-BR) Translator",
+  "main": "api/translate.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
   },
   "dependencies": {
-    "@prisma/client": "^5.10.0",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "@google/generative-ai": "^0.14.0",
+    "pg": "^8.11.5"
   },
   "devDependencies": {
-    "prisma": "^5.10.0"
+    "vercel": "^34.0.0"
   }
 }
